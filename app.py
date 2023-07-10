@@ -169,6 +169,51 @@ def get_driver_schedule(driver_id):
         {'schedules': [dict(schedule) for schedule in schedules]})
 
 
+@app.route('/api/set_crew_on_board', methods=['POST'])
+def set_crew_on_board():
+    conn = get_db()
+    cur = conn.cursor()
+    crew_on_board = request.get_json()
+    cur.execute(
+        """
+        insert into crewOnBoard (train_id, station_id, driver_id, conductor_id)
+        values (?, ?, ?, ?)
+        """, (crew_on_board['train_id'], crew_on_board['station_id'],
+              crew_on_board['driver_id'], crew_on_board['conductor_id']))
+    conn.commit()
+    return json.dumps({'result': True})
+
+
+@app.route('/api/set_trains', methods=['POST'])
+def set_trains():
+    conn = get_db()
+    cur = conn.cursor()
+    train = request.get_json()
+    cur.execute(
+        """
+        insert into train (train_id, car_id, origin_id, destinaion_id)
+        values (?, ?, ?)
+        """, (train['train_id'], train['car_id'], train['origin_id'],
+              train['destination_id']))
+    conn.commit()
+    return json.dumps({'result': True})
+
+
+@app.route('/api/set_stops', methods=['POST'])
+def set_stops():
+    conn = get_db()
+    cur = conn.cursor()
+    stop = request.get_json()
+    cur.execute(
+        """
+        insert into stops (train_id, station_id, arrival_time, departure_time)
+        values (?, ?, ?, ?)
+        """, (stop['train_id'], stop['station_id'], stop['arrival_time'],
+              stop['departure_time']))
+    conn.commit()
+    return json.dumps({'result': True})
+
+
 # @app.route('/')
 # def home():
 #     # セッションにuser_idがない場合、未ログインなのでusernameを渡さずにHTMLをレンダリング
