@@ -52,6 +52,123 @@ def get_cars():
     return json.dumps({'cars': [dict(car) for car in cars]})
 
 
+@app.route('/api/get_car/<car_id>')
+def get_car(car_id):
+    conn = get_db()
+    cur = conn.cursor()
+    car = cur.execute('SELECT * FROM cars WHERE car_id = ?',
+                      (car_id, )).fetchone()
+    return json.dumps({'car': dict(car)})
+
+
+@app.route('/api/get_stations')
+def get_stations():
+    conn = get_db()
+    cur = conn.cursor()
+    stations = cur.execute('SELECT * FROM stations').fetchall()
+    return json.dumps({'stations': [dict(station) for station in stations]})
+
+
+@app.route('/api/get_station/<station_id>')
+def get_station(station_id):
+    conn = get_db()
+    cur = conn.cursor()
+    station = cur.execute('SELECT * FROM stations WHERE station_id = ?',
+                          (station_id, )).fetchone()
+    return json.dumps({'station': dict(station) if station else None})
+
+
+@app.route('/api/get_drivers')
+def get_drivers():
+    conn = get_db()
+    cur = conn.cursor()
+    drivers = cur.execute('SELECT * FROM drivers').fetchall()
+    return json.dumps({'drivers': [dict(driver) for driver in drivers]})
+
+
+@app.route('/api/get_driver/<driver_id>')
+def get_driver(driver_id):
+    conn = get_db()
+    cur = conn.cursor()
+    driver = cur.execute('SELECT * FROM drivers WHERE driver_id = ?',
+                         (driver_id, )).fetchone()
+    return json.dumps({'driver': dict(driver)})
+
+
+@app.route('/api/get_conductors')
+def get_crews():
+    conn = get_db()
+    cur = conn.cursor()
+    crews = cur.execute('SELECT * FROM conductors').fetchall()
+    return json.dumps({'crews': [dict(crew) for crew in crews]})
+
+
+@app.route('/api/get_conductor/<crew_id>')
+def get_crew(crew_id):
+    conn = get_db()
+    cur = conn.cursor()
+    crew = cur.execute('SELECT * FROM conductors WHERE conductor_id = ?',
+                       (crew_id, )).fetchone()
+    return json.dumps({'crew': dict(crew)})
+
+
+@app.route('/api/get_schedule_by_station/<station_id>')
+def get_schedule_by_station(station_id):
+    conn = get_db()
+    cur = conn.cursor()
+    schedules = cur.execute(
+        """
+          select stops.departure_time, dest.name as destination
+          from train, stops, stations dest
+          inner join stations here
+          where train.train_id = stops.train_id
+            and here.station_id = ?
+            and stops.station_id = here.station_id
+            and train.destinaion = dest.station_id
+            and stops.departure_time is not NULL
+          order by stops.departure_time
+                            """, (station_id, )).fetchall()
+    return json.dumps(
+        {'schedules': [dict(schedule) for schedule in schedules]})
+
+
+@app.route('/api/get_car_schedule/<car_id>')
+def get_car_schedule(car_id):
+    conn = get_db()
+    cur = conn.cursor()
+    schedules = cur.execute(
+        """         
+        select crewOnBoard.train_id, stations.station_id, stops.arrival_time, stops.departure_time
+        from stops, stations, crewOnBoard, train 
+        where crewOnBoard.train_id = stops.train_id
+          and crewOnBoard.station_id = stops.station_id
+          and train.car = ?
+          and train.train_id = crewOnBoard.train_id
+          and stations.station_id = crewOnBoard.station_id
+        order by crewOnBoard.train_id, stops.departure_time NULLS LAST, stops.arrival_time  
+  """, (car_id, )).fetchall()
+    return json.dumps(
+        {'schedules': [dict(schedule) for schedule in schedules]})
+
+
+@app.route('/api/get_driver_schedule/<driver_id>')
+def get_driver_schedule(driver_id):
+    conn = get_db()
+    cur = conn.cursor()
+    schedules = cur.execute(
+        """
+        select crewOnBoard.train_id, stations.name, stops.arrival_time, stops.departure_time
+        from stops, stations, crewOnBoard, train
+        where crewOnBoard.train_id = stops.train_id
+          and crewOnBoard.station_id = stops.station_id
+          and crewOnBoard.driver_id = ?
+          and train.train_id = crewOnBoard.train_id
+          and stations.station_id = crewOnBoard.station_id
+        """, (driver_id, )).fetchall()
+    return json.dumps(
+        {'schedules': [dict(schedule) for schedule in schedules]})
+
+
 # @app.route('/')
 # def home():
 #     # セッションにuser_idがない場合、未ログインなのでusernameを渡さずにHTMLをレンダリング
