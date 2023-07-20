@@ -6,10 +6,14 @@ from datetime import timedelta
 import datetime
 from flask import Flask, render_template, request, g, redirect, url_for, session, flash
 import json
+from flask_cors import CORS
 
 DATABASE = "db.sqlite3"
-app = Flask(__name__, static_folder='./static')
+app = Flask(__name__,
+            static_folder='./dm_app/out',
+            template_folder='./dm_app/out')
 app.config['SECRET_KEY'] = '1234'
+CORS(app)
 
 
 @app.before_request
@@ -682,6 +686,17 @@ def set_train_schedule():
 #     else:
 #         flash('Managerとして登録されています', "error")
 #         return redirect(url_for('emp_master', id=id))
+
+
+@app.route('/', defaults={'path': ''})
+def catch_all(path):
+    return app.send_static_file("index.html")
+
+
+@app.route('/<path:path>')
+def static_file(path):
+    return app.send_static_file(path)
+
 
 # pythonを直接実行したときでもflask run --debugと同じ挙動となるようにする
 if __name__ == '__main__':
