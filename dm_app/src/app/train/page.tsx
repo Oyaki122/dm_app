@@ -5,7 +5,6 @@ import {TrainsSchema} from '@/app/common/types/trains';
 
 import {
   Heading,
-  Box,
 } from '@/app/common/components';
 import {fetcher} from '@/app/common/hook/swr';
 import useSWR from 'swr';
@@ -28,14 +27,18 @@ export default function TrainPage() {
 
   return <>
     <Heading as="h2" size="lg">列車管理</Heading>
-    <Box>
-      {trains?.map((train) => (
+
+    {trains?.map((train) => {
+      const url = `/train/detail?slug=${train.train_id}`;
+      console.log(url);
+      return (
+
         <TrainCard key={train.train_id} num={train.train_id} destination={
           stations?.find(e=> e.station_id === train.destinaion)?.name ?? ''}
         origin={stations?.find(e=>e.station_id === train.origin)?.name ?? ''} />
-      ))}
-    </Box>
-
-
+      );
+    })}
   </>;
+
+
 }

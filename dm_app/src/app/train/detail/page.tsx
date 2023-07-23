@@ -28,10 +28,12 @@ import {ScheduleTable, ScheduleTableRow} from '@/app/common/components/table';
 import Link from 'next/link';
 
 
-export default function Train() {
+export default function TrainDetail() {
   const params = {
-    slug: new URLSearchParams(new URL(window.location.href).search).get('slug'),
-  };
+    slug: ''};
+  if (typeof window !== 'undefined') {
+    params.slug = new URLSearchParams(new URL(window.location.href).search).get('slug') ?? '';
+  }
   const {data: trainObj, error: trainError} = useSWR(
     'http://localhost:5000/api/train_detail/' + params.slug, fetcher(TrainSchema));
   const {data: stationsObj, error: stationError} = useSWR(
@@ -73,7 +75,7 @@ export default function Train() {
 
   return (
     <>
-      <Heading as="h2" size="lg">列車管理</Heading>
+      {/* <Heading as="h2" size="lg">列車管理</Heading> */}
       <HStack p="1rem" spacing="1rem">
         <Box p="1rem">
           <Heading as="h3" size="md">列車番号: {trainObj?.train.train_id}</Heading>
@@ -84,7 +86,7 @@ export default function Train() {
         </Box>
         <Spacer />
         <Box>
-          <Link href={`/train/${trainObj?.train.train_id}/edit`}>
+          <Link href={`/train/edit?slug=${trainObj?.train.train_id}`}>
             <Button colorScheme="green">
             編集</Button></Link>
         </Box>

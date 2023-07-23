@@ -40,8 +40,10 @@ export default function TrainEdit() {
 
   const router = useRouter();
   const params = {
-    slug: new URLSearchParams(new URL(window.location.href).search).get('slug'),
-  };
+    slug: ''};
+  if (typeof window !== 'undefined') {
+    params.slug = new URLSearchParams(new URL(window.location.href).search).get('slug') ?? '';
+  }
   // const {data: trainsObj, error: trainsError} = useSWR(
   //   'http://localhost:5000/api/train_details', fetcher(TrainsSchema));
 
@@ -135,7 +137,7 @@ export default function TrainEdit() {
       }
     );
     await Promise.all([crewRes, stopsRes, trainRes]);
-    router.push(`/train/${trainObj?.train.train_id}`);
+    router.push(`/train/detail?slug=${trainObj?.train.train_id}`);
   };
   return (
     <>
