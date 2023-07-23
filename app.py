@@ -167,7 +167,7 @@ def get_car_schedule(car_id):
           and train.car = ?
           and train.train_id = crewOnBoard.train_id
           and stations.station_id = crewOnBoard.station_id
-        order by crewOnBoard.train_id, stops.departure_time NULLS LAST, stops.arrival_time  
+        order by crewOnBoard.train_id, stops.departure_time, stops.arrival_time  
   """, (car_id, )).fetchall()
     return json.dumps(
         {'schedules': [dict(schedule) for schedule in schedules]},
@@ -194,7 +194,7 @@ def get_train_schedule(train_id):
     schedules = cur.execute(
         """       
         select * from stops where train_id = ?
-        order by stops.departure_time NULLS LAST, stops.arrival_time  
+        order by stops.departure_time, stops.arrival_time  
         """, (train_id, )).fetchall()
     return json.dumps({schedules: [dict(schedule) for schedule in schedules]})
 
@@ -207,7 +207,7 @@ def get_stops(train_id):
     stops = cur.execute(
         """
         select * from stops where train_id = ?
-        order by stops.departure_time NULLS LAST, stops.arrival_time  
+        order by stops.departure_time, stops.arrival_time  
         """, (train_id, )).fetchall()
     return json.dumps({'stops': [dict(stop) for stop in stops]},
                       ensure_ascii=False)
