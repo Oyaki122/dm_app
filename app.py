@@ -71,11 +71,16 @@ def get_car(car_id):
 
 @app.route('/api/get_stations')
 def get_stations():
-    conn = get_db()
-    cur = conn.cursor()
-    stations = cur.execute('SELECT * FROM stations').fetchall()
-    return json.dumps({'stations': [dict(station) for station in stations]},
-                      ensure_ascii=False)
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        stations = cur.execute('SELECT * FROM stations').fetchall()
+        return json.dumps(
+            {'stations': [dict(station) for station in stations]},
+            ensure_ascii=False)
+    except Exception as e:
+        print(e)
+        return json.dumps({'error': str(e)}), 500
 
 
 @app.route('/api/get_station/<station_id>')
