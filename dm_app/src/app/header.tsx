@@ -54,9 +54,9 @@ export default function Header() {
               <DrawerBody>
                 <VStack spacing={4}>
                   <NextLink href="/driver">運転手スケジュール</NextLink>
-                  <NextLink href="/crew">車掌スケジュール</NextLink>
                   <NextLink href="/train">列車スケジュール</NextLink>
                   <NextLink href="/station">駅時刻表</NextLink>
+                  <NextLink href="/newTrain">新規列車追加</NextLink>
                 </VStack>
               </DrawerBody>
             </DrawerContent>

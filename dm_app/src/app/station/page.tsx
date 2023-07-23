@@ -10,8 +10,7 @@ import {
   Box,
   FormControl,
   FormLabel,
-  Select,
-
+  Select
 } from '../common/components';
 import {ScheduleTable, ScheduleTableRow} from '../common/components/table';
 

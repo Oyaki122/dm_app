@@ -189,6 +189,19 @@ def get_train_schedule(train_id):
 
 
 # stops
+@app.route('/api/stops/<train_id>', methods=['GET'])
+def get_stops(train_id):
+    conn = get_db()
+    cur = conn.cursor()
+    stops = cur.execute(
+        """
+        select * from stops where train_id = ?
+        order by stops.departure_time NULLS LAST, stops.arrival_time  
+        """, (train_id, )).fetchall()
+    return json.dumps({'stops': [dict(stop) for stop in stops]},
+                      ensure_ascii=False)
+
+
 @app.route('/api/stops/<train_id>/edit', methods=['POST'])
 def update_stops(train_id):
     conn = get_db()
@@ -252,7 +265,7 @@ def get_crewRange(train_id):
 
 
 @app.route('/api/crewRange/<train_id>/edit', methods=['POST'])
-def update_crewRange(train_id, station_id):
+def update_crewRange(train_id):
     conn = get_db()
     cur = conn.cursor()
     data = request.get_json()["data"]
@@ -261,13 +274,13 @@ def update_crewRange(train_id, station_id):
         recode = cur.execute(
             """
             select * from crewOnBoard where train_id = ? and station_id = ?
-            """, (train_id, station_id)).fetchall()
+            """, (train_id, crews['station_id'])).fetchall()
         if len(recode) == 0:
             cur.execute(
                 """
                 insert into crewOnBoard (train_id, station_id, driver_id, conductor_id)
                 values (?, ?, ?, ?)
-                """, (train_id, station_id, crews['driver_id'],
+                """, (train_id, crews['station_id'], crews['driver_id'],
                       crews['conductor_id']))
         else:
             cur.execute(
@@ -278,25 +291,25 @@ def update_crewRange(train_id, station_id):
                 where train_id = ?
                   and station_id = ?
                 """, (crews['driver_id'], crews['conductor_id'], train_id,
-                      station_id))
+                      crews['station_id']))
     conn.commit()
     return json.dumps({'result': True})
 
 
-@app.route('/api/crewRange/<train_id>/delete', methods=['POST'])
-def delete_crewRange(train_id):
-    conn = get_db()
-    cur = conn.cursor()
-    data = request.get_json()["target"]
-    for i in data:
-        cur.execute(
-            """
-            delete from crewOnBoard
-            where train_id = ?
-              and station_id = ?
-            """, (train_id, i))
-    conn.commit()
-    return json.dumps({'result': True})
+# @app.route('/api/crewRange/<train_id>/delete', methods=['POST'])
+# def delete_crewRange(train_id):
+#     conn = get_db()
+#     cur = conn.cursor()
+#     data = request.get_json()["target"]
+#     for i in data:
+#         cur.execute(
+#             """
+#             delete from crewOnBoard
+#             where train_id = ?
+#               and station_id = ?
+#             """, (train_id, i))
+#     conn.commit()
+#     return json.dumps({'result': True})
 
 
 # train
@@ -329,7 +342,7 @@ def update_train(train_id):
     cur.execute(
         """
         update train
-        set destination = ?,
+        set destinaion = ?,
             origin = ?,
             car = ?
         where train_id = ?
@@ -370,28 +383,28 @@ def set_train_schedule():
     conn = get_db()
     cur = conn.cursor()
     train_schedule = request.get_json()["train"]
-    for i in train_schedule["schedule"]:
-        cur.execute(
-            """
-            insert into stops (train_id, station_id, arrival_time, departure_time)
-            values (?, ?, ?, ?)
-            """, (i['train_id'], i['station_id'], i['arrival_time'],
-                  i['departure_time']))
-
-        cur.execute(
-            """
-            insert into crewOnBoard (train_id, station_id, driver_id, conductor_id)
-            values (?, ?, ?, ?)
-            """, (i['train_id'], i['station_id'], i['driver_id'],
-                  i['conductor_id']))
-
     train = train_schedule["detail"]
     cur.execute(
         """
         insert into train (train_id, car, origin, destinaion)
         values (?, ?, ?, ?)
-        """, (train['train_id'], train['car_id'], train['origin_id'],
-              train['destination_id']))
+        """,
+        (train['id'], train['car_id'], train['origin'], train['destinaion']))
+    conn.commit()
+    id = train['id']
+
+    for i in train_schedule["schedule"]:
+        cur.execute(
+            """
+            insert into stops (train_id, station_id, arrival_time, departure_time)
+            values (?, ?, ?, ?)
+            """, (id, i['station_id'], i['arrival_time'], i['departure_time']))
+
+        cur.execute(
+            """
+            insert into crewOnBoard (train_id, station_id, driver_id, conductor_id)
+            values (?, ?, ?, ?)
+            """, (id, i['station_id'], i['driver_id'], i['conductor_id']))
 
     conn.commit()
 

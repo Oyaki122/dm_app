@@ -16,6 +16,13 @@ export function ScheduleTableRow({element}:{element: string[]}) {
     {element.map((e, i) => <Td key={i}>{e}</Td>)}
   </Tr>;
 }
+
+export function ScheduleTableFormRow({element}:{element: React.ReactNode[]}) {
+  return <Tr>
+    {element.map((e, i) => <Td key={i}>{e}</Td>)}
+  </Tr>;
+}
+
 export function ScheduleTable({indexes, children}:{indexes: string[], children?: React.ReactNode}) {
   return <>
     <TableContainer>
