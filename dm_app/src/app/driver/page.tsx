@@ -18,12 +18,12 @@ import {DriverScheduleSchema} from '../common/types/driverSchedule';
 export default function Driver() {
 
   const {data: driversObj, error: driverError} = useSWR(
-    'http://localhost:5000/api/get_drivers', fetcher(DriverSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app/api/get_drivers', fetcher(DriverSchema));
   const [driverId, setDriverId] = useState<number>(0);
   const drivers = driversObj?.drivers;
 
   const {data: scheduleObj, error: scheduleError} = useSWR(
-    `http://localhost:5000/api/get_driver_schedule/${driverId}`,
+    `http://user.keio.ac.jp/~ub622319/dm_app/api/get_driver_schedule/${driverId}`,
     fetcher(DriverScheduleSchema));
 
   const schedule = scheduleObj?.schedules;

@@ -35,11 +35,11 @@ import {useRouter} from 'next/navigation';
 
 export default function NewTrain() {
   const {data: stationsObj, error: stationError} = useSWR(
-    'http://localhost:5000/api/get_stations', fetcher(StationSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app/api/get_stations', fetcher(StationSchema));
   const stations = stationsObj?.stations;
 
   const {data: driversObj, error: driverError} = useSWR(
-    'http://localhost:5000/api/get_drivers', fetcher(DriverSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app/api/get_drivers', fetcher(DriverSchema));
   const drivers = driversObj?.drivers;
 
   const [origin, setOrigin] = useState<number>(0);
@@ -72,7 +72,7 @@ export default function NewTrain() {
     };
 
     await fetch(
-      `http://localhost:5000/api/add_train`,
+      `http://user.keio.ac.jp/~ub622319/dm_app/api/add_train`,
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},

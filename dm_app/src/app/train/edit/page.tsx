@@ -45,13 +45,13 @@ export default function TrainEdit() {
     params.slug = new URLSearchParams(new URL(window.location.href).search).get('slug') ?? '';
   }
   // const {data: trainsObj, error: trainsError} = useSWR(
-  //   'http://localhost:5000/api/train_details', fetcher(TrainsSchema));
+  //   'http://user.keio.ac.jp/~ub622319/dm_app/api/train_details', fetcher(TrainsSchema));
 
 
   const {data: trainObj, error: trainError} = useSWR(
-    'http://localhost:5000/api/train_detail/' + params.slug, fetcher(TrainSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app/api/train_detail/' + params.slug, fetcher(TrainSchema));
   const {data: stationsObj, error: stationError} = useSWR(
-    'http://localhost:5000/api/get_stations', fetcher(StationSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app/api/get_stations', fetcher(StationSchema));
   const stations = stationsObj?.stations;
 
   // const train = {
@@ -61,11 +61,11 @@ export default function TrainEdit() {
   // };
 
   const {data: driversObj, error: driverError} = useSWR(
-    'http://localhost:5000/api/get_drivers', fetcher(DriverSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app/api/get_drivers', fetcher(DriverSchema));
   const drivers = driversObj?.drivers;
 
   const {data: crewRangeObj, error: crewRangeError} = useSWR(
-    `http://localhost:5000/api/crewRange/${trainObj?.train.train_id}`, fetcher(CrewRangeSchema));
+    `http://user.keio.ac.jp/~ub622319/dm_app/api/crewRange/${trainObj?.train.train_id}`, fetcher(CrewRangeSchema));
   // const crewRange = crewRangeObj?.range.map((e, i)=> {
   //   return {
   //     station: stations?.find(f=>f.station_id === e.station_id)?.name ?? '',
@@ -74,7 +74,7 @@ export default function TrainEdit() {
   // });
 
   const {data: stopsObj, error: stopsError} = useSWR(
-    `http://localhost:5000/api/stops/${trainObj?.train.train_id}`, fetcher(StopsSchema));
+    `http://user.keio.ac.jp/~ub622319/dm_app/api/stops/${trainObj?.train.train_id}`, fetcher(StopsSchema));
 
   // const stops = stopsObj?.stops.map((e, i)=> {
   //   return {
@@ -108,7 +108,7 @@ export default function TrainEdit() {
 
   const updateTrain = async ()=>{
     const crewRes = fetch(
-      `http://localhost:5000/api/crewRange/${trainObj?.train.train_id}/edit`,
+      `http://user.keio.ac.jp/~ub622319/dm_app/api/crewRange/${trainObj?.train.train_id}/edit`,
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -117,7 +117,7 @@ export default function TrainEdit() {
     );
 
     const stopsRes = fetch(
-      `http://localhost:5000/api/stops/${trainObj?.train.train_id}/edit`,
+      `http://user.keio.ac.jp/~ub622319/dm_app/api/stops/${trainObj?.train.train_id}/edit`,
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -125,7 +125,7 @@ export default function TrainEdit() {
       }
     );
     const trainRes = fetch(
-      `http://localhost:5000/api/train_detail/${trainObj?.train.train_id}/update`,
+      `http://user.keio.ac.jp/~ub622319/dm_app/api/train_detail/${trainObj?.train.train_id}/update`,
       {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},

@@ -19,7 +19,7 @@ const fetcher = async (url : string) => {
   return res.json();
 };
 export default function useUser() {
-  const {data, mutate, error} = useSWR('http://localhost:5000/api/user', fetcher);
+  const {data, mutate, error} = useSWR('http://user.keio.ac.jp/~ub622319/dm_app/api/user', fetcher);
 
   const loading = !data && !error;
   const loggedOut = error && error.status === 403;
