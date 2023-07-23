@@ -126,23 +126,27 @@ def get_crew(crew_id):
 
 @app.route('/api/get_schedule_by_station/<station_id>')
 def get_schedule_by_station(station_id):
-    conn = get_db()
-    cur = conn.cursor()
-    schedules = cur.execute(
-        """
-          select stops.departure_time, dest.name as destination
-          from train, stops, stations dest
-          inner join stations here
-          where train.train_id = stops.train_id
-            and here.station_id = ?
-            and stops.station_id = here.station_id
-            and train.destinaion = dest.station_id
-            and stops.departure_time is not NULL
-          order by stops.departure_time
-                            """, (station_id, )).fetchall()
-    return json.dumps(
-        {'schedules': [dict(schedule) for schedule in schedules]},
-        ensure_ascii=False)
+    try:
+        conn = get_db()
+        cur = conn.cursor()
+        schedules = cur.execute(
+            """
+              select stops.departure_time, dest.name as destination
+              from train, stops, stations dest
+              inner join stations here
+              where train.train_id = stops.train_id
+                and here.station_id = ?
+                and stops.station_id = here.station_id
+                and train.destinaion = dest.station_id
+                and stops.departure_time is not NULL
+              order by stops.departure_time
+                                """, (station_id, )).fetchall()
+        return json.dumps(
+            {'schedules': [dict(schedule) for schedule in schedules]},
+            ensure_ascii=False)
+    except Exception as e:
+        print(e)
+        return json.dumps({'error': str(e)}), 500
 
 
 @app.route('/api/get_car_schedule/<car_id>')
