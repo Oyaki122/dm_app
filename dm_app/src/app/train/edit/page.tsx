@@ -180,7 +180,7 @@ export default function TrainEdit() {
         </Flex>
         <Spacer />
         <Flex>
-          <Link href="/train/[slug]" as={`/train/${trainObj?.train.train_id}`}>
+          <Link href={`/train/detail/?slug=${trainObj?.train.train_id}`}>
             <Button colorScheme='red'>キャンセル</Button></Link>
 
           <Button colorScheme='blue' onClick={updateTrain}>更新</Button>
