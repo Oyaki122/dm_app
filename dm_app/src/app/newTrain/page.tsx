@@ -1,6 +1,5 @@
 'use client';
 
-import {TrainSchema} from '@/app/common/types/train';
 import {StationSchema} from '@/app/common/types/stations';
 import {DriverSchema} from '@/app/common/types/drivers';
 
@@ -11,7 +10,6 @@ import {
   Box,
   Heading,
   HStack,
-  Text,
   Tabs,
   TabList,
   Tab,
@@ -24,7 +22,7 @@ import {
   Spacer,
   Button,
   Input,
-  Td
+  Tr
 } from '@/app/common/components';
 
 import {fetcher} from '@/app/common/hook/swr';
@@ -32,7 +30,7 @@ import useSWR from 'swr';
 
 import {ScheduleTable, ScheduleTableFormRow} from '@/app/common/components/table';
 
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import {useRouter} from 'next/navigation';
 
 export default function NewTrain() {
@@ -83,6 +81,9 @@ export default function NewTrain() {
     );
     router.push(`/train/`);
   };
+
+  console.log(stationError, driverError, scheduleState);
+
   return (
     <>
       <Heading as="h2" size="lg">列車管理 編集</Heading>
@@ -179,7 +180,7 @@ export default function NewTrain() {
                     } />
                   )
                 }
-                <Td>
+                <Tr>
                   <Button colorScheme='blue' onClick={()=>{
                     setScheduleState([...scheduleState, {
                       station_id: 0,
@@ -188,7 +189,7 @@ export default function NewTrain() {
                       driver_id: 0
                     }]);
                   }}>追加</Button>
-                </Td>
+                </Tr>
               </ScheduleTable>
             </TabPanel>
             <TabPanel>
@@ -229,7 +230,7 @@ export default function NewTrain() {
                       ]
                     } />)
                 }
-                <Td>
+                <Tr>
                   <Button colorScheme='blue' onClick={()=>{
                     setScheduleState([...scheduleState, {
                       station_id: 0,
@@ -238,7 +239,7 @@ export default function NewTrain() {
                       driver_id: 1
                     }]);
                   }}>追加</Button>
-                </Td>
+                </Tr>
               </ScheduleTable>
             </TabPanel>
           </TabPanels>

@@ -9,18 +9,88 @@ import {
   DrawerContent,
   DrawerCloseButton,
   useDisclosure,
-  VStack
+  VStack,
+  // HStack,
+  // Input
 } from './common/components';
 import {HamburgerIcon} from '@chakra-ui/icons';
 
 import NextLink from 'next/link';
-import {MutableRefObject, useRef} from 'react';
-
+import {MutableRefObject, useRef,
+  // useState
+} from 'react';
+// import useUser from './common/hook/login';
+// import {useRouter} from 'next/navigation';
 
 export default function Header() {
+  // const {user, loading, loggedOut, mutate} = useUser();
+
+  // const [username, setUsername] = useState<string>('');
+  // const [password, setPassword] = useState<string>('');
+  // const [password2, setPassword2] = useState<string>('');
+  // const [isRegister, setIsRegister] = useState<boolean>(false);
+
+  // const router = useRouter();
+
+  // const login = async ()=>{
+  //   await fetch('http://localhost:5000/api/login', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({username, password}),
+  //     credentials: 'include',
+  //   });
+  //   mutate();
+  //   router.push(`/`);
+  // };
+
+  // const register = async ()=>{
+  //   if (password !== password2) {
+  //     alert('パスワードが一致しません');
+  //     return;
+  //   }
+  //   await fetch('http://localhost:5000/api/signup', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({username, password}),
+  //     credentials: 'include',
+  //   });
+  //   mutate();
+  //   setIsRegister(false);
+  //   router.push(`/`);
+  // };
+
+
+  // console.log(loggedOut, loading, user);
 
   const {isOpen, onOpen, onClose} = useDisclosure();
   const btnRef = useRef() as MutableRefObject<HTMLButtonElement>;
+
+  // const LoginComponent = ()=> (<>
+  //   <DrawerHeader>{isRegister ? '新規登録' : 'ログイン'} </DrawerHeader>
+  //   <DrawerBody>
+  //     <VStack spacing={4} align={'start'} >
+  //       <Input placeholder="ユーザー名" type='text' value={username} onChange={(e)=>setUsername(e.target.value)}/>
+  //       <Input placeholder="パスワード" type="password" value={password} onChange={(e)=>setPassword(e.target.value)}/>
+  //       {isRegister && <Input placeholder="パスワード(確認)" type="password" value={password2} onChange={(e)=>setPassword2(e.target.value)}/> }
+  //       <HStack>
+  //         {isRegister ?
+  //           (<>
+  //             <Button onClick={()=>setIsRegister(false)}>戻る</Button>
+  //             <Button onClick={register}>登録</Button>
+  //           </>) : (<>
+  //             <Button onClick={()=>setIsRegister(true)}>新規登録</Button>
+  //             <Button onClick={login}>ログイン</Button>
+  //           </>)}
+  //       </HStack>
+  //     </VStack>
+  //   </DrawerBody>
+  // </>);
+
+
   return (
     <Box as="header">
       <Flex
@@ -50,16 +120,24 @@ export default function Header() {
             <DrawerOverlay />
             <DrawerContent>
               <DrawerCloseButton />
-              <DrawerHeader>メニュー</DrawerHeader>
-              <DrawerBody>
-                <VStack spacing={4}>
-                  <NextLink href="/driver">運転手スケジュール</NextLink>
-                  <NextLink href="/train">列車スケジュール</NextLink>
-                  <NextLink href="/station">駅時刻表</NextLink>
-                  <NextLink href="/newTrain">新規列車追加</NextLink>
-                </VStack>
-              </DrawerBody>
+              {
+                // loggedOut || loading ?
+                //   <LoginComponent />
+                //   :
+                <>
+                  <DrawerHeader>メニュー</DrawerHeader>
+                  <DrawerBody>
+                    <VStack spacing={4}>
+                      <NextLink href="/driver">運転手スケジュール</NextLink>
+                      <NextLink href="/train">列車スケジュール</NextLink>
+                      <NextLink href="/station">駅時刻表</NextLink>
+                      <NextLink href="/newTrain">新規列車追加</NextLink>
+                    </VStack>
+                  </DrawerBody>
+                </>
+              }
             </DrawerContent>
+
           </Drawer>
         </Flex>
       </Flex>

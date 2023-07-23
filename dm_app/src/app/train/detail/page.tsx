@@ -28,7 +28,10 @@ import {ScheduleTable, ScheduleTableRow} from '@/app/common/components/table';
 import Link from 'next/link';
 
 
-export default function Train({params}: { params: { slug: string } }) {
+export default function Train() {
+  const params = {
+    slug: new URLSearchParams(new URL(window.location.href).search).get('slug'),
+  };
   const {data: trainObj, error: trainError} = useSWR(
     'http://localhost:5000/api/train_detail/' + params.slug, fetcher(TrainSchema));
   const {data: stationsObj, error: stationError} = useSWR(

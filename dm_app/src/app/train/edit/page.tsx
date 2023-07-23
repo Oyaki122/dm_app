@@ -5,6 +5,7 @@ import {StationSchema} from '@/app/common/types/stations';
 import {CrewRangeSchema} from '@/app/common/types/crewRange';
 import {DriverSchema} from '@/app/common/types/drivers';
 import {StopsSchema,} from '@/app/common/types/stops';
+// import {TrainsSchema} from '@/app/common/types/trains';
 
 import Link from 'next/link';
 
@@ -35,18 +36,27 @@ import {ScheduleTable, ScheduleTableFormRow} from '@/app/common/components/table
 import {useState, useEffect} from 'react';
 import {useRouter} from 'next/navigation';
 
-export default function TrainEdit({params}: { params: { slug: string } }) {
+export default function TrainEdit() {
+
+  const router = useRouter();
+  const params = {
+    slug: new URLSearchParams(new URL(window.location.href).search).get('slug'),
+  };
+  // const {data: trainsObj, error: trainsError} = useSWR(
+  //   'http://localhost:5000/api/train_details', fetcher(TrainsSchema));
+
+
   const {data: trainObj, error: trainError} = useSWR(
     'http://localhost:5000/api/train_detail/' + params.slug, fetcher(TrainSchema));
   const {data: stationsObj, error: stationError} = useSWR(
     'http://localhost:5000/api/get_stations', fetcher(StationSchema));
   const stations = stationsObj?.stations;
 
-  const train = {
-    num: trainObj?.train.train_id,
-    destination: stations?.find(f=>f.station_id === trainObj?.train.destinaion)?.name ?? '',
-    origin: stations?.find(f=>f.station_id === trainObj?.train.origin)?.name ?? ''
-  };
+  // const train = {
+  //   num: trainObj?.train.train_id,
+  //   destination: stations?.find(f=>f.station_id === trainObj?.train.destinaion)?.name ?? '',
+  //   origin: stations?.find(f=>f.station_id === trainObj?.train.origin)?.name ?? ''
+  // };
 
   const {data: driversObj, error: driverError} = useSWR(
     'http://localhost:5000/api/get_drivers', fetcher(DriverSchema));
@@ -54,23 +64,23 @@ export default function TrainEdit({params}: { params: { slug: string } }) {
 
   const {data: crewRangeObj, error: crewRangeError} = useSWR(
     `http://localhost:5000/api/crewRange/${trainObj?.train.train_id}`, fetcher(CrewRangeSchema));
-  const crewRange = crewRangeObj?.range.map((e, i)=> {
-    return {
-      station: stations?.find(f=>f.station_id === e.station_id)?.name ?? '',
-      driver: drivers?.find(f=>f.driver_id === e.driver_id)?.name ?? '',
-    };
-  });
+  // const crewRange = crewRangeObj?.range.map((e, i)=> {
+  //   return {
+  //     station: stations?.find(f=>f.station_id === e.station_id)?.name ?? '',
+  //     driver: drivers?.find(f=>f.driver_id === e.driver_id)?.name ?? '',
+  //   };
+  // });
 
   const {data: stopsObj, error: stopsError} = useSWR(
     `http://localhost:5000/api/stops/${trainObj?.train.train_id}`, fetcher(StopsSchema));
 
-  const stops = stopsObj?.stops.map((e, i)=> {
-    return {
-      station: stations?.find(f=>f.station_id === e.station_id)?.name ?? '',
-      arrival: e.arrival_time,
-      departure: e.departure_time,
-    };
-  });
+  // const stops = stopsObj?.stops.map((e, i)=> {
+  //   return {
+  //     station: stations?.find(f=>f.station_id === e.station_id)?.name ?? '',
+  //     arrival: e.arrival_time,
+  //     departure: e.departure_time,
+  //   };
+  // });
 
   const [origin, setOrigin] = useState<number>(trainObj?.train.origin ?? 0);
   const [destinaion, setDestination] = useState<number>(trainObj?.train.destinaion ?? 0);
@@ -80,7 +90,7 @@ export default function TrainEdit({params}: { params: { slug: string } }) {
     setDestination(trainObj?.train.destinaion ?? 0);
   }, [trainObj]);
 
-  console.log(trainError, stationError, driverError, crewRangeError, stopsError);
+  console.log(trainError, stationError, driverError, crewRangeError, stopsError,);
 
   const [crewRangeState, setCrewRangeState] = useState(crewRangeObj?.range ?? []);
 
@@ -93,7 +103,6 @@ export default function TrainEdit({params}: { params: { slug: string } }) {
     setStopsState(stopsObj?.stops ?? []);
   }, [stopsObj]);
 
-  const router = useRouter();
 
   const updateTrain = async ()=>{
     const crewRes = fetch(
@@ -133,6 +142,18 @@ export default function TrainEdit({params}: { params: { slug: string } }) {
       <Heading as="h2" size="lg">列車管理 編集</Heading>
       <HStack p="1rem" spacing="1rem">
         <Box p="1rem">
+          {/* <FormControl>
+            <FormLabel>列車番号</FormLabel>
+            <Input type="number" value={trainNum}
+              onChange={e=>setTrainNum(parseInt(e.target.value, 10))}/>
+
+            <Select value={trainNum} onChange={e=>setTrainNum(parseInt(e.target.value, 10))}>
+              {
+                trainsObj?.trains.map((e, i)=>
+                  <option key={i} value={e.train_id}>{e.train_id}</option>)
+              }
+            </Select>
+            </FormControl> */}
           <Heading as="h3" size="md">列車番号: {trainObj?.train.train_id}</Heading>
         </Box>
         <Flex p="1rem">

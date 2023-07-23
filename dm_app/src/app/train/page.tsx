@@ -1,51 +1,41 @@
 'use client';
+import TrainCard from './trainCard';
 
-import {fetcher} from '../common/hook/swr';
-import useSWR from 'swr';
+import {TrainsSchema} from '@/app/common/types/trains';
 
 import {
   Heading,
   Box,
-  Flex
-} from '../common/components';
-
-
-import {TrainsSchema} from '../common/types/trains';
+} from '@/app/common/components';
+import {fetcher} from '@/app/common/hook/swr';
+import useSWR from 'swr';
 import {StationSchema} from '../common/types/stations';
-import TrainCard from './trainCard';
 
 
-export default function Train() {
+export default function TrainPage() {
+  const {data: trainObj, error: trainError} = useSWR(
+    'http://localhost:5000/api/train_details', fetcher(TrainsSchema));
+  // const train = trainObj?.trains;
+
   const {data: stationsObj, error: stationError} = useSWR(
     'http://localhost:5000/api/get_stations', fetcher(StationSchema));
   const stations = stationsObj?.stations;
 
-  // const [stationId, setStationId] = useState<number>(0);
+  const trains = trainObj?.trains;
 
-  // const {data: scheduleObj, error: scheduleError} = useSWR(
-  //   `http://localhost:5000/api/get_schedule_by_station/${stationId}`, fetcher(StationScheduleSchema));
-  // const schedule = scheduleObj?.schedules;
+  console.log(trainError, stationError);
+  console.log(trains);
 
-  const {data: trainObj, error: trainError} = useSWR(
-    'http://localhost:5000/api/train_details', fetcher(TrainsSchema));
+  return <>
+    <Heading as="h2" size="lg">列車管理</Heading>
+    <Box>
+      {trains?.map((train) => (
+        <TrainCard key={train.train_id} num={train.train_id} destination={
+          stations?.find(e=> e.station_id === train.destinaion)?.name ?? ''}
+        origin={stations?.find(e=>e.station_id === train.origin)?.name ?? ''} />
+      ))}
+    </Box>
 
-  const trainArray = trainObj?.trains.map((e, i)=> {
-    return {
-      num: e.train_id,
-      destination: stations?.find(f=>f.station_id === e.destinaion)?.name ?? '',
-      origin: stations?.find(f=>f.station_id === e.origin)?.name ?? ''
-    };
-  });
 
-  return (
-    <>
-      <Heading as="h2" size="lg">列車管理</Heading>
-      <Flex p="1rem" direction={'row'} wrap={'wrap'}>
-        {trainArray?.map((e, i)=>
-          <Box p="0.5rem" key={i} flexGrow={1}>
-            <TrainCard key={i} num={e.num} destination={e.destination ?? ''} origin={e.origin ?? ''} />
-          </Box>)}
-      </Flex>
-    </>);
-
+  </>;
 }

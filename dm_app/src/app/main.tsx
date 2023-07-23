@@ -1,6 +1,7 @@
 import {Container} from './common/components';
 import React from 'react';
 
+
 export default function Main({children}: { children: React.ReactNode }) {
   return (
     <Container

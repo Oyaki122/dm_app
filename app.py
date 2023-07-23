@@ -13,7 +13,9 @@ app = Flask(__name__,
             static_folder='./dm_app/out',
             template_folder='./dm_app/out')
 app.config['SECRET_KEY'] = '1234'
-CORS(app)
+app.config["SESSION_COOKIE_SAMESITE"] = "None"
+app.config["SESSION_COOKIE_SECURE"] = True
+CORS(app, supports_credentials=True, origins=["http://*"])
 
 
 @app.before_request
@@ -423,74 +425,82 @@ def set_train_schedule():
 #                        (session['user_id'], )).fetchone()
 #     return render_template('home.html', username=user['username'])
 
-# @app.route('/login', methods=['GET', 'POST'])
-# def login():
-#     if 'user_id' in session:
-#         return redirect(url_for('home'))
-#     error = None
-#     # POSTはこの関数の一番下のlogin.htmlから呼ばれ、その中のフォームを送信する。フォームの内容に基づき、ユーザ情報を照合する
-#     if request.method == 'POST':
-#         # フォームの内容を取得する
-#         username = request.form['username']
-#         password = request.form['password']
-#         # パスワードは平文ではなくハッシュ値で照合する
-#         h = hashlib.md5(password.encode())
-#         conn = get_db()
-#         cur = conn.cursor()
-#         user = cur.execute(
-#             'SELECT * FROM LoginUser WHERE username = ? AND password = ?',
-#             (username, h.hexdigest())).fetchone()
-#         if user is None:
-#             # ユーザ認証されなかった場合、エラーメッセージをレンダリングする。メッセージはこのように引数で渡すこともできるし、else以下のようにflashを使用することもできる。
-#             error = 'Invalid username or password'
-#         else:
-#             # ユーザ認証された場合、セッションに記録する
-#             session['user_id'] = username
-#             # flashメッセージを設定する
-#             flash("Logged in")
-#             return redirect(url_for('home'))
-#     return render_template('login.html', error=error)
 
-# @app.route('/signup', methods=['GET', 'POST'])
-# def signup():
-#     conn = get_db()
-#     cur = conn.cursor()
-#     request_valid = True
-#     if request.method == 'POST':
-#         # フォームの内容を取得し、バリデーションを行う。エラーがあればflashメッセージで通知する
-#         username = request.form['username']
-#         password = request.form['password']
-#         confirm = request.form['confirm']
-#         if not username:
-#             flash('Username is required')
-#             request_valid = False
-#         if not password:
-#             flash('Password is required')
-#             request_valid = False
-#         if password != confirm:
-#             flash('Passwords do not match')
-#             request_valid = False
-#         if cur.execute('SELECT * FROM LoginUser WHERE username = ?',
-#                        (username, )).fetchone():
-#             # ユーザーがすでに存在している場合はエラーを表示する
-#             flash('This username is already taken')
-#             request_valid = False
-#         if request_valid:
-#             # 新しいユーザーを作成する
-#             h = hashlib.md5(password.encode())
-#             cur.execute(
-#                 'INSERT INTO LoginUser (username, password) VALUES (?, ?)',
-#                 (username, h.hexdigest()))
-#             conn.commit()
-#             # ログインページにリダイレクトする
-#             return redirect(url_for('login'))
-#     return render_template('signup.html')
+@app.route('/api/user', methods=['GET'])
+def user():
+    if 'user_id' not in session:
+        return json.dumps({'result': False}), 403
+    else:
+        return json.dumps({'result': True, 'user_id': session['user_id']}), 200
 
-# @app.route('/logout')
-# def logout():
-#     if session.pop('user_id', None):
-#         flash("Logged out")
-#     return redirect(url_for('home'))
+
+@app.route('/api/login', methods=['POST'])
+def login():
+    if 'user_id' in session:
+        return json.dumps({'result': True}), 200
+    error = None
+    # POSTはこの関数の一番下のlogin.htmlから呼ばれ、その中のフォームを送信する。フォームの内容に基づき、ユーザ情報を照合する
+    # フォームの内容を取得する
+    username = request.get_json()['username']
+    password = request.get_json()['password']
+    # パスワードは平文ではなくハッシュ値で照合する
+    h = hashlib.md5(password.encode())
+    conn = get_db()
+    cur = conn.cursor()
+    user = cur.execute(
+        'SELECT * FROM LoginUser WHERE username = ? AND password = ?',
+        (username, h.hexdigest())).fetchone()
+    if user is None:
+        # ユーザ認証されなかった場合、エラーメッセージをレンダリングする。メッセージはこのように引数で渡すこともできるし、else以下のようにflashを使用することもできる。
+        error = 'Invalid username or password'
+    else:
+        # ユーザ認証された場合、セッションに記録する
+        session['user_id'] = username
+        # flashメッセージを設定する
+        flash("Logged in")
+        return json.dumps({'result': True}), 200
+    return json.dumps({'result': False, 'error': error}), 403
+
+
+@app.route('/api/signup', methods=['POST'])
+def signup():
+    conn = get_db()
+    cur = conn.cursor()
+    request_valid = True
+    # フォームの内容を取得し、バリデーションを行う。エラーがあればflashメッセージで通知する
+    username = request.get_json()['username']
+    password = request.get_json()['password']
+
+    error = ""
+
+    if not username:
+        error = 'Username is required'
+        request_valid = False
+    if not password:
+        error = 'Password is required'
+        request_valid = False
+    if cur.execute('SELECT * FROM LoginUser WHERE username = ?',
+                   (username, )).fetchone():
+        # ユーザーがすでに存在している場合はエラーを表示する
+        error = 'This username is already taken'
+        request_valid = False
+    if request_valid:
+        # 新しいユーザーを作成する
+        h = hashlib.md5(password.encode())
+        cur.execute('INSERT INTO LoginUser (username, password) VALUES (?, ?)',
+                    (username, h.hexdigest()))
+        conn.commit()
+        # ログインページにリダイレクトする
+        return json.dumps({'result': True}), 200
+    return json.dumps({'result': False, 'error': error}), 403
+
+
+@app.route('/api/logout')
+def logout():
+    if session.pop('user_id', None):
+        flash("Logged out")
+    return json.dumps({'result': True})
+
 
 # @app.route("/employee", methods=["GET", "POST"])
 # def employee():
@@ -707,6 +717,7 @@ def catch_all(path):
 
 
 @app.route('/<path:path>')
+@app.route('/<path:path>/')
 def static_file(path):
     return app.send_static_file(path)
 
