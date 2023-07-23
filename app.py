@@ -508,9 +508,17 @@ def catch_all(path):
 
 
 @app.route('/<path:path>')
-@app.route('/<path:path>/')
 def static_file(path):
+    print(path)
     return app.send_static_file(path)
+
+
+@app.route('/<path:path>/')
+def static_html(path):
+    print(path)
+    query = path.split('?')[1]
+    url = path.split('?')[0]
+    return app.send_static_file(url + 'index.html' + '?' + query)
 
 
 # pythonを直接実行したときでもflask run --debugと同じ挙動となるようにする
