@@ -100,9 +100,29 @@ export default function TrainEdit() {
     setCrewRangeState(crewRangeObj?.range ?? []);
   }, [crewRangeObj]);
 
-  const [stopsState, setStopsState] = useState(stopsObj?.stops ?? []);
+  const [stopsState, setStopsState] = useState(stopsObj?.stops
+    .sort((a, b)=> {
+      if (a.departure_time === null && b.departure_time === null) {
+        return 0;
+      } else if (a.departure_time === null) {
+        return 1;
+      } else if (b.departure_time === null) {
+        return -1;
+      }
+      return (a.departure_time ?? 0) - (b.departure_time ?? 0);
+    }) ?? []);
   useEffect(()=>{
-    setStopsState(stopsObj?.stops ?? []);
+    setStopsState(stopsObj?.stops
+      .sort((a, b)=> {
+        if (a.departure_time === null && b.departure_time === null) {
+          return 0;
+        } else if (a.departure_time === null) {
+          return 1;
+        } else if (b.departure_time === null) {
+          return -1;
+        }
+        return (a.departure_time ?? 0) - (b.departure_time ?? 0);
+      }) ?? []);
   }, [stopsObj]);
 
 

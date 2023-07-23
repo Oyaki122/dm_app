@@ -62,13 +62,23 @@ export default function TrainDetail() {
   const {data: stopsObj, error: stopsError} = useSWR(
     `http://user.keio.ac.jp/~ub622319/dm_app2/api/stops/${trainObj?.train.train_id}`, fetcher(StopsSchema));
 
-  const stops = stopsObj?.stops.map((e, i)=> {
-    return {
-      station: stations?.find(f=>f.station_id === e.station_id)?.name ?? '',
-      arrival: e.arrival_time,
-      departure: e.departure_time,
-    };
-  });
+  const stops = stopsObj?.stops
+    .sort((a, b)=> {
+      if (a.departure_time === null && b.departure_time === null) {
+        return 0;
+      } else if (a.departure_time === null) {
+        return 1;
+      } else if (b.departure_time === null) {
+        return -1;
+      }
+      return (a.departure_time ?? 0) - (b.departure_time ?? 0);
+    }).map((e, i)=> {
+      return {
+        station: stations?.find(f=>f.station_id === e.station_id)?.name ?? '',
+        arrival: e.arrival_time,
+        departure: e.departure_time,
+      };
+    });
 
 
   console.log(trainError, stationError, driverError, crewRangeError, stopsError);
