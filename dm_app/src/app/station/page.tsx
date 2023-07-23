@@ -19,13 +19,13 @@ import {useState} from 'react';
 
 export default function Station() {
   const {data: stationsObj, error: stationError} = useSWR(
-    'http://user.keio.ac.jp/~ub622319/dm_app2//api/get_stations', fetcher(StationSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app2/api/get_stations', fetcher(StationSchema));
   const stations = stationsObj?.stations;
 
   const [stationId, setStationId] = useState<number>(0);
 
   const {data: scheduleObj, error: scheduleError} = useSWR(
-    `http://user.keio.ac.jp/~ub622319/dm_app2//api/get_schedule_by_station/${stationId}`, fetcher(StationScheduleSchema));
+    `http://user.keio.ac.jp/~ub622319/dm_app2/api/get_schedule_by_station/${stationId}`, fetcher(StationScheduleSchema));
   const schedule = scheduleObj?.schedules;
 
 

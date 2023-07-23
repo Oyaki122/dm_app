@@ -35,9 +35,9 @@ export default function TrainDetail() {
     params.slug = new URLSearchParams(new URL(window.location.href).search).get('slug') ?? '';
   }
   const {data: trainObj, error: trainError} = useSWR(
-    'http://user.keio.ac.jp/~ub622319/dm_app2//api/train_detail/' + params.slug, fetcher(TrainSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app2/api/train_detail/' + params.slug, fetcher(TrainSchema));
   const {data: stationsObj, error: stationError} = useSWR(
-    'http://user.keio.ac.jp/~ub622319/dm_app2//api/get_stations', fetcher(StationSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app2/api/get_stations', fetcher(StationSchema));
   const stations = stationsObj?.stations;
 
   const train = {
@@ -47,11 +47,11 @@ export default function TrainDetail() {
   };
 
   const {data: driversObj, error: driverError} = useSWR(
-    'http://user.keio.ac.jp/~ub622319/dm_app2//api/get_drivers', fetcher(DriverSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app2/api/get_drivers', fetcher(DriverSchema));
   const drivers = driversObj?.drivers;
 
   const {data: crewRangeObj, error: crewRangeError} = useSWR(
-    `http://user.keio.ac.jp/~ub622319/dm_app2//api/crewRange/${trainObj?.train.train_id}`, fetcher(CrewRangeSchema));
+    `http://user.keio.ac.jp/~ub622319/dm_app2/api/crewRange/${trainObj?.train.train_id}`, fetcher(CrewRangeSchema));
   const crewRange = crewRangeObj?.range.map((e, i)=> {
     return {
       station: stations?.find(f=>f.station_id === e.station_id)?.name ?? '',
@@ -60,7 +60,7 @@ export default function TrainDetail() {
   });
 
   const {data: stopsObj, error: stopsError} = useSWR(
-    `http://user.keio.ac.jp/~ub622319/dm_app2//api/stops/${trainObj?.train.train_id}`, fetcher(StopsSchema));
+    `http://user.keio.ac.jp/~ub622319/dm_app2/api/stops/${trainObj?.train.train_id}`, fetcher(StopsSchema));
 
   const stops = stopsObj?.stops.map((e, i)=> {
     return {

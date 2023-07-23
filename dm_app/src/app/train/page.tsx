@@ -13,11 +13,11 @@ import {StationSchema} from '../common/types/stations';
 
 export default function TrainPage() {
   const {data: trainObj, error: trainError} = useSWR(
-    'http://user.keio.ac.jp/~ub622319/dm_app2//api/train_details', fetcher(TrainsSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app2/api/train_details', fetcher(TrainsSchema));
   // const train = trainObj?.trains;
 
   const {data: stationsObj, error: stationError} = useSWR(
-    'http://user.keio.ac.jp/~ub622319/dm_app2//api/get_stations', fetcher(StationSchema));
+    'http://user.keio.ac.jp/~ub622319/dm_app2/api/get_stations', fetcher(StationSchema));
   const stations = stationsObj?.stations;
 
   const trains = trainObj?.trains;

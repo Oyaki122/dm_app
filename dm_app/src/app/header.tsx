@@ -33,7 +33,7 @@ export default function Header() {
   // const router = useRouter();
 
   // const login = async ()=>{
-  //   await fetch('http://user.keio.ac.jp/~ub622319/dm_app2//api/login', {
+  //   await fetch('http://user.keio.ac.jp/~ub622319/dm_app2/api/login', {
   //     method: 'POST',
   //     headers: {
   //       'Content-Type': 'application/json'
@@ -50,7 +50,7 @@ export default function Header() {
   //     alert('パスワードが一致しません');
   //     return;
   //   }
-  //   await fetch('http://user.keio.ac.jp/~ub622319/dm_app2//api/signup', {
+  //   await fetch('http://user.keio.ac.jp/~ub622319/dm_app2/api/signup', {
   //     method: 'POST',
   //     headers: {
   //       'Content-Type': 'application/json'
